@@ -1,37 +1,52 @@
 import styled from "styled-components"
 import { BiExit } from "react-icons/bi"
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
+import { useContext, useEffect, useState } from "react"
+import { LevelContext } from "../LevelContext"
+import axios from "axios"
+import BASE_URL from "../constants/baseUrl"
 
 export default function HomePage() {
+
+  const { config, username } = useContext(LevelContext)
+  const [transactionsList, setTransactionsList] = useState([])
+  let total = 0;
+
+  useEffect(() => {
+    axios.get(`${BASE_URL}/home`, config)
+      .then((res) => {
+        console.log(res.data)
+        console.log("foi")
+        setTransactionsList(res.data)
+      })
+      .catch((err) => console.log("nao foi"))
+
+  }, [])
+
+  transactionsList.map(t => (t.tipo === "saida" ? total -= Number(t.value) : total += Number(t.value)))
+
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, Fulano</h1>
+        <h1>Olá, {username}</h1>
         <BiExit />
       </Header>
 
       <TransactionsContainer>
         <ul>
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
-
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
+          {transactionsList.map((t) =>
+            <ListItemContainer>
+              <div>
+                <span>{t.date}</span>
+                <strong>{t.description}</strong>
+              </div>
+              <Value color={(t.tipo === "saida") ? "negativo" : "positivo"}>{t.value}</Value>
+            </ListItemContainer>)}
         </ul>
 
         <article>
           <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
+          <Value color={(total >= 0) ? "positivo" : "negativo"}>{total}</Value>
         </article>
       </TransactionsContainer>
 
