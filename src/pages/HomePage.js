@@ -4,20 +4,21 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
 import { useContext, useEffect, useState } from "react"
 import { LevelContext } from "../LevelContext"
 import axios from "axios"
-import BASE_URL from "../constants/baseUrl"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function HomePage() {
 
   const { config, username } = useContext(LevelContext)
   const [transactionsList, setTransactionsList] = useState([])
+  const navigate = useNavigate();
   let total = 0;
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/home`, config)
+    axios.get(`${process.env.REACT_APP_API_URL}/home`, config)
       .then((res) => {
         console.log(res.data)
         console.log("foi")
-        setTransactionsList(res.data)
+        setTransactionsList(res.data.reverse())
       })
       .catch((err) => console.log("nao foi"))
 
@@ -29,7 +30,9 @@ export default function HomePage() {
     <HomeContainer>
       <Header>
         <h1>Olá, {username}</h1>
-        <BiExit />
+        <Link to="/">
+          <BiExit />
+        </Link>
       </Header>
 
       <TransactionsContainer>
@@ -46,17 +49,17 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={(total >= 0) ? "positivo" : "negativo"}>{total}</Value>
+          <Value color={(total >= 0) ? "positivo" : "negativo"}>{total.toFixed(2)}</Value>
         </article>
       </TransactionsContainer>
 
 
       <ButtonsContainer>
-        <button>
+        <button onClick={() => navigate("/nova-transacao/entrada")}>
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
         </button>
-        <button>
+        <button onClick={() => navigate("/nova-transacao/saida")}>
           <AiOutlineMinusCircle />
           <p>Nova <br />saída</p>
         </button>
@@ -89,9 +92,17 @@ const TransactionsContainer = styled.article`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+  overflow-y: scroll;
+
   article {
+    width: 96vw;
+    background-color: white;
     display: flex;
-    justify-content: space-between;   
+    justify-content: space-between;
+    position: fixed;
+    bottom: 157px;
+    z-index: 1;
     strong {
       font-weight: 700;
       text-transform: uppercase;

@@ -3,8 +3,6 @@ import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import MyWalletLogo from "../components/MyWalletLogo"
-import BASE_URL from "../constants/baseUrl";
-import { LevelContext } from "../LevelContext";
 
 export default function SignUpPage() {
 
@@ -13,7 +11,6 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const {config} = useContext(LevelContext)
 
   function signUp(e) {
     e.preventDefault();
@@ -21,9 +18,9 @@ export default function SignUpPage() {
     const body = { name, email, password }
 
     if (password === confirmPassword) {
-      axios.post(`${BASE_URL}/cadastro`, body)
-      .then(() => navigate("/"))
-      .catch((err) => alert(err.response.data))
+      axios.post(`${process.env.REACT_APP_API_URL}/cadastro`, body)
+        .then(() => navigate("/"))
+        .catch((err) => alert(err.response.data))
     } else {
       alert("A senha deve ser igual")
     }
@@ -61,7 +58,8 @@ export default function SignUpPage() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required />
-        <button type="submit">Cadastrar</button>
+        <button
+          type="submit">Cadastrar</button>
       </form>
 
       <Link to="/">
