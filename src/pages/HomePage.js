@@ -17,7 +17,6 @@ export default function HomePage() {
     axios.get(`${process.env.REACT_APP_API_URL}/home`, config)
       .then((res) => {
         console.log(res.data)
-        console.log("foi")
         setTransactionsList(res.data.reverse())
       })
       .catch((err) => console.log("nao foi"))
